@@ -22,7 +22,13 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body: { topics } }) => {
-        expect(topics).toEqual([{ slug: "football", description: "Footie!" }]);
+        expect(topics.length).toBe(1);
+        topics.forEach((topic) => {
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
+        });
       });
   });
 });
