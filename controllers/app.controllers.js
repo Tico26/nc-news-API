@@ -11,10 +11,14 @@ exports.getTopics = (req, res) => {
     .send({ topics: endpointsJson["GET /api/topics"].exampleResponse.topics });
 };
 
-exports.getArticleById = (req, res) => {
+exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
 
-  fetchArticleById(article_id).then((article) => {
-    res.status(200).send({ article });
-  });
+  fetchArticleById(article_id)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

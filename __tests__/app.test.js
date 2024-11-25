@@ -43,7 +43,7 @@ describe("GET /api/topics", () => {
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with article object with a specific set of properties", () => {
     return request(app)
-      .get("/api/articles/4", () => {})
+      .get("/api/articles/1", () => {})
       .expect(200)
       .then(({ body }) => {
         expect(body.article).toMatchObject({
@@ -55,6 +55,15 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           article_img_url: expect.any(String),
         });
+      });
+  });
+
+  test("400: Responds with a bad request message if article ID does not exist", () => {
+    return request(app)
+      .get("/api/articles/not_an_id")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
       });
   });
 });
