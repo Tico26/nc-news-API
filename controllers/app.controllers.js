@@ -1,14 +1,14 @@
 const endpointsJson = require("../endpoints.json");
 const data = require("../db/data/test-data/index");
-const { fetchArticleById } = require("../models/app.models");
+const { fetchTopics, fetchArticleById } = require("../models/app.models");
 exports.getApi = (req, res) => {
   res.status(200).send({ endpoints: endpointsJson });
 };
 
 exports.getTopics = (req, res) => {
-  res
-    .status(200)
-    .send({ topics: endpointsJson["GET /api/topics"].exampleResponse.topics });
+  fetchTopics().then((topics) => {
+    res.status(200).send({ topics });
+  });
 };
 
 exports.getArticleById = (req, res, next) => {
