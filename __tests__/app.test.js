@@ -142,3 +142,29 @@ describe("Get /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:articles_id/comments", () => {
+  test("204: Responds with the posted message on the specified ID", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(201)
+      .send({ username: "icellusedkars", body: "test_message" })
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          body: "test_message",
+          author: "icellusedkars",
+          article_id: 1,
+        });
+      });
+  });
+
+  test("400: Returns Bad Request when body does not contain correct fields", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(400)
+      .send({ username: "invalid" })
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
