@@ -168,3 +168,43 @@ describe("POST /api/articles/:articles_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: Responds with updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(200)
+      .send({ inc_votes: 1 })
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 101,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("400: Responds with Bad Request when wrong value type is inputted", () => {
+    return request(app)
+      .patch("/api/articles/:article_id")
+      .expect(400)
+      .send({ inc_votes: "invalid" })
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  test("400: Responds with Bad Request when incorrct field is passed in", () => {
+    return request(app)
+      .patch("/api/articles/:article_id")
+      .expect(400)
+      .send({ something_else: "invalid" })
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});

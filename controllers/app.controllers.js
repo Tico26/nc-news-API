@@ -6,6 +6,7 @@ const {
   fetchAllArticles,
   fetchComments,
   createComment,
+  updateVotes,
 } = require("../models/app.models");
 exports.getApi = (req, res) => {
   res.status(200).send({ endpoints: endpointsJson });
@@ -55,6 +56,16 @@ exports.postComment = (req, res, next) => {
   createComment(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.patchVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  updateVotes(article_id, inc_votes)
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch(next);
 };
