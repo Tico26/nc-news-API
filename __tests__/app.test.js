@@ -208,3 +208,26 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Responds status code for deleted item", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+
+  test("400: Responds with Bad Request when wrong value type is inputted", () => {
+    return request(app)
+      .delete("/api/comments/not_an_id")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  // test("404: Responds with Not Found when ID doesn't exist", () => {
+  //   return request(app)
+  //     .delete("/api/comments/999")
+  //     .expect(404)
+  //     .then(({ body: { msg } }) => {
+  //       expect(msg).toBe("Bad Request");
+  //     });
+  // });
+});
