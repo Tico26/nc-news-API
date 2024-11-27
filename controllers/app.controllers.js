@@ -8,6 +8,7 @@ const {
   createComment,
   updateVotes,
   deleteCommentById,
+  fetchUsers,
 } = require("../models/app.models");
 exports.getApi = (req, res) => {
   res.status(200).send({ endpoints: endpointsJson });
@@ -76,6 +77,14 @@ exports.deleteComment = (req, res, next) => {
   deleteCommentById(comment_id)
     .then(({ msg }) => {
       res.status(204).send({ msg });
+    })
+    .catch(next);
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch(next);
 };
