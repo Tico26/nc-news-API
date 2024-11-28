@@ -105,6 +105,41 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+
+  test("200: Return articles sorted by sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id", { descending: true });
+      });
+  });
+
+  test("200: Return articles sorted by sort_by in ascending order query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=ASC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("article_id");
+      });
+  });
+
+  test("400: Returns status and message when sort_by inputs are not one of the accepted inputs", () => {
+    return request(app)
+      .get("/api/articles?sort_by=not_valid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Sort By not inputted correctly");
+      });
+  });
+  test("400: Returns status and message when sort_by inputs are not one of the accepted inputs", () => {
+    return request(app)
+      .get("/api/articles?order=AS")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Order not inputted correctly");
+      });
+  });
 });
 
 describe("Get /api/articles/:article_id/comments", () => {
