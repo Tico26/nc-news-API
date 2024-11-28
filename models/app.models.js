@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { sort } = require("../db/data/development-data/articles");
 
 exports.fetchTopics = () => {
   return db.query("SELECT * FROM topics").then(({ rows }) => {
@@ -21,7 +22,26 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchAllArticles = () => {
+exports.fetchAllArticles = (sort_by = "created_at", order = "DESC") => {
+  const acceptedSortByInputs = [
+    "article_id",
+    "topic",
+    "author",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  const acceptedOrderInputs = ["ASC", "DESC"];
+
+  if (sort_by && !acceptedSortByInputs.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Sort By not inputted correctly",
+    });
+  }
+  if (order && !acceptedOrderInputs.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Order not inputted correctly" });
+  }
   return db
     .query(
       `SELECT CAST(COUNT(comments.article_id) AS INTEGER) AS comment_count, 
@@ -29,7 +49,7 @@ exports.fetchAllArticles = () => {
       FROM articles 
       LEFT JOIN comments ON articles.article_id = comments.article_id 
       GROUP BY articles.article_id 
-      ORDER BY articles.created_at DESC`
+      ORDER BY articles.${sort_by} ${order}`
     )
     .then(({ rows }) => {
       return rows;
