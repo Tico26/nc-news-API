@@ -114,31 +114,55 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("article_id", { descending: true });
       });
   });
+  describe("sort_by and order", () => {
+    test("200: Return articles sorted by sort_by in ascending order query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=ASC")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("article_id");
+        });
+    });
 
-  test("200: Return articles sorted by sort_by in ascending order query", () => {
-    return request(app)
-      .get("/api/articles?sort_by=article_id&order=ASC")
-      .expect(200)
-      .then(({ body: { articles } }) => {
-        expect(articles).toBeSortedBy("article_id");
-      });
+    test("400: Returns status and message when sort_by inputs are not one of the accepted inputs", () => {
+      return request(app)
+        .get("/api/articles?sort_by=not_valid")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("'Sort By' invalid");
+        });
+    });
+    test("400: Returns status and message when sort_by inputs are not one of the accepted inputs", () => {
+      return request(app)
+        .get("/api/articles?order=invalid_order")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("'Order' invalid");
+        });
+    });
   });
-
-  test("400: Returns status and message when sort_by inputs are not one of the accepted inputs", () => {
-    return request(app)
-      .get("/api/articles?sort_by=not_valid")
-      .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Sort By not inputted correctly");
-      });
-  });
-  test("400: Returns status and message when sort_by inputs are not one of the accepted inputs", () => {
-    return request(app)
-      .get("/api/articles?order=AS")
-      .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Order not inputted correctly");
-      });
+  describe("topic", () => {
+    test("200: Filter Result by topic", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              topic: "mitch",
+            });
+          });
+        });
+    });
+    test("400: Returns status and message when sort_by inputs are not one of the accepted inputs", () => {
+      return request(app)
+        .get("/api/articles?topic=not_valid")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("'Topic' is invalid");
+        });
+    });
   });
 });
 
