@@ -65,6 +65,19 @@ describe("GET /api/articles/:article_id", () => {
         expect(msg).toBe("Bad Request");
       });
   });
+
+  describe("comment_count", () => {
+    test("200: responds with total count of all comments associated to inputted article_id", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).toMatchObject({
+            comment_count: 11,
+          });
+        });
+    });
+  });
 });
 
 describe("GET /api/articles", () => {

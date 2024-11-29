@@ -9,18 +9,21 @@ exports.fetchTopics = () => {
 };
 
 exports.fetchArticleById = (article_id) => {
-  return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
-    .then(({ rows }) => {
-      if (!rows[0]) {
-        return Promise.reject({
-          status: 404,
-          msg: `No article found with id of ${article_id}`,
-        });
-      }
+  let query = `SELECT CAST(COUNT(comments.article_id) AS INTEGER) AS comment_count,articles.* FROM articles 
+                LEFT JOIN comments 
+                ON articles.article_id = comments.article_id 
+                WHERE comments.article_id = $1 
+                GROUP BY articles.article_id;`;
+  return db.query(query, [article_id]).then(({ rows }) => {
+    if (!rows[0]) {
+      return Promise.reject({
+        status: 404,
+        msg: `No article found with id of ${article_id}`,
+      });
+    }
 
-      return rows[0];
-    });
+    return rows[0];
+  });
 };
 
 exports.fetchAllArticles = (sort_by = "created_at", order = "DESC", topic) => {
