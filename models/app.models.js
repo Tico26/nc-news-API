@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const acceptedTopics = require("../acceptedTopics");
 const { sort } = require("../db/data/development-data/articles");
 
 exports.fetchTopics = () => {
@@ -22,7 +23,7 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchAllArticles = (sort_by = "created_at", order = "DESC") => {
+exports.fetchAllArticles = (sort_by = "created_at", order = "DESC", topic) => {
   const acceptedSortByInputs = [
     "article_id",
     "topic",
@@ -32,28 +33,41 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "DESC") => {
     "article_img_url",
   ];
   const acceptedOrderInputs = ["ASC", "DESC"];
+  const acceptedTopicInputs = acceptedTopics;
 
   if (sort_by && !acceptedSortByInputs.includes(sort_by)) {
     return Promise.reject({
       status: 400,
-      msg: "Sort By not inputted correctly",
+      msg: "'Sort By' invalid",
     });
   }
   if (order && !acceptedOrderInputs.includes(order)) {
-    return Promise.reject({ status: 400, msg: "Order not inputted correctly" });
+    return Promise.reject({ status: 400, msg: "'Order' invalid" });
   }
-  return db
-    .query(
-      `SELECT CAST(COUNT(comments.article_id) AS INTEGER) AS comment_count, 
+  if (topic && !acceptedTopicInputs.includes(topic)) {
+    return Promise.reject({ status: 400, msg: "'Topic' is invalid" });
+  }
+  let query = `SELECT CAST(COUNT(comments.article_id) AS INTEGER) AS comment_count, 
       articles.article_id,articles.title,articles.topic, articles.author,articles.created_at,articles.votes,articles.article_img_url 
       FROM articles 
       LEFT JOIN comments ON articles.article_id = comments.article_id 
-      GROUP BY articles.article_id 
-      ORDER BY articles.${sort_by} ${order}`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+      `;
+
+  if (topic) {
+    query += ` WHERE topic = '${topic}'`;
+  }
+
+  if (sort_by) {
+    query += ` GROUP BY articles.article_id 
+      ORDER BY articles.${sort_by}`;
+  }
+  if (order) {
+    query += `  ${order}`;
+  }
+
+  return db.query(query).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.fetchComments = (article_id) => {
