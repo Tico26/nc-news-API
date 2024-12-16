@@ -30,7 +30,7 @@
     "description": "serves an object of a single article",
     "queries": [],
     "exampleResponse": {
-      "article": {
+      "articles": {
         "article": {
           "comment_count": 8,
           "article_id": 1,
