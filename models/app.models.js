@@ -36,7 +36,7 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "DESC", topic) => {
     "article_img_url",
   ];
   const acceptedOrderInputs = ["ASC", "DESC"];
-  const acceptedTopicInputs = acceptedTopics;
+  // const acceptedTopicInputs = acceptedTopics;
 
   if (sort_by && !acceptedSortByInputs.includes(sort_by)) {
     return Promise.reject({
@@ -47,9 +47,9 @@ exports.fetchAllArticles = (sort_by = "created_at", order = "DESC", topic) => {
   if (order && !acceptedOrderInputs.includes(order)) {
     return Promise.reject({ status: 400, msg: "'Order' invalid" });
   }
-  if (topic && !acceptedTopicInputs.includes(topic)) {
-    return Promise.reject({ status: 400, msg: "'Topic' is invalid" });
-  }
+  // if (topic && !acceptedTopicInputs.includes(topic)) {
+  //   return Promise.reject({ status: 400, msg: "'Topic' is invalid" });
+  // }
   let query = `SELECT CAST(COUNT(comments.article_id) AS INTEGER) AS comment_count, 
       articles.article_id,articles.title,articles.topic, articles.author,articles.created_at,articles.votes,articles.article_img_url 
       FROM articles 
